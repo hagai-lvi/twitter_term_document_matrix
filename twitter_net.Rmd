@@ -1,0 +1,114 @@
+---
+title: "Twitter_term_document_matrix"
+author: "Hagai Levi"
+date: "9 April 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# This is based on http://www.rdatamining.com/examples/text-mining
+
+setwd('/Users/hagai_lvi/tmp/data_scientist/assignment_3')
+source('./credentials.R')
+library(twitteR)
+
+setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_token_secret)
+
+maxID <- NULL
+n_tweets <- 0
+N_TWEETS <- 300
+tweets <- NULL
+while(n_tweets < N_TWEETS) {
+  tmp <- userTimeline("BarackObama", n=200, maxID = maxID)
+  maxID <- tmp[[length(tmp)]]$id  
+  tweets <- append(tweets, tmp)
+  n_tweets <- length(tweets)
+}
+
+# This function returns the most frequent terms in a TermDocumentMatrix
+# as a named vector that includes the frequencies
+getMostFrequentTerms <- function(dtm, N){
+  m <- as.matrix(dtm)
+  v <- sort(rowSums(m), decreasing=TRUE)
+  head(v, N)
+}
+
+# Create a dataframe from the data
+df <- do.call("rbind", lapply(tweets, as.data.frame))
+
+cat(sprintf("Matrix dimensions: %i cols, %i rows", ncol(df), nrow(df)))
+library(tm)
+
+
+# build a corpus, which is a collection of text documents
+# VectorSource specifies that the source is character vectors.
+myCorpus <- Corpus(VectorSource(df$text))
+
+# all lowercase
+myCorpus <- tm_map(myCorpus, content_transformer(tolower))
+
+# remove punctuation
+myCorpus <- tm_map(myCorpus, removePunctuation)
+
+# remove numbers
+myCorpus <- tm_map(myCorpus, removeNumbers)
+
+# remove stopwords
+myStopwords <- c(stopwords('english'), "available", "via")
+myCorpus <- tm_map(myCorpus, removeWords, myStopwords)
+
+# stem words in a text document with the snowball stemmers,
+# which requires packages Snowball, RWeka, rJava, RWekajars
+myCorpus <- tm_map(myCorpus, stemDocument)
+
+# Create a TermDocumentMatrix
+myDtm <- TermDocumentMatrix(myCorpus, control = list(minWordLength = 1))
+inspect(myDtm[20:30,20:30])
+
+
+findFreqTerms(myDtm, lowfreq=10)
+
+# which words are associated with "obama"?
+findAssocs(myDtm, 'obama', 0.30)
+
+# which words are associated with "american"?
+findAssocs(myDtm, 'american', 0.30)
+
+
+termDocMatrix <- as.matrix(myDtm)
+
+# Transform Data into an Adjacency Matrix
+# change it to a Boolean matrix
+termDocMatrix[termDocMatrix>=1] <- 1
+# transform into a term-term adjacency matrix
+termMatrix <- termDocMatrix %*% t(termDocMatrix)
+# inspect terms numbered 5 to 10
+termMatrix[5:10,5:10]
+
+library(igraph)
+
+# Get the most frequent words
+frequent <- getMostFrequentTerms(myDtm, 20)
+frequentTermMatrix <- termMatrix[names(frequent),names(frequent)]
+
+# make a binary matrix
+frequentTermMatrix[frequentTermMatrix>1] <- 1
+g <- graph.adjacency(frequentTermMatrix, mode = "undirected")
+g <- simplify(g)
+V(g)$degree <- degree(g)
+
+# Plot the Graph
+# set seed to make the layout reproducible
+set.seed(100)
+lay <- layout.kamada.kawai(g)
+plot(g, layout=lay)
+
+# Now add clustering to the graph
+community <- walktrap.community(g)
+plot(g, layout=lay, vertex.size=5, vertex.color=community$membership, asp=FALSE)
+
+```
