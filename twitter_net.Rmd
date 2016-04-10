@@ -1,23 +1,31 @@
 ---
-title: "Twitter_term_document_matrix"
+title: "Twitter term-document-matrix"
 author: "Hagai Levi"
 date: "9 April 2016"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+Based on http://www.rdatamining.com/examples/text-mining
 
-```{r}
-# This is based on http://www.rdatamining.com/examples/text-mining
-
+```{r, echo=FALSE}
 setwd('/Users/hagai_lvi/tmp/data_scientist/assignment_3')
 source('./credentials.R')
+```
+
+```{r}
 library(twitteR)
 
+# set twitter credentials
 setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_token_secret)
+```
 
+Now, we gather tweets of the user BarackObama
+```{r, echo=TRUE}
 maxID <- NULL
 n_tweets <- 0
 N_TWEETS <- 300
@@ -28,7 +36,10 @@ while(n_tweets < N_TWEETS) {
   tweets <- append(tweets, tmp)
   n_tweets <- length(tweets)
 }
+```
 
+Extract a corpus and a TermDocumentMatrix
+```{r}
 # This function returns the most frequent terms in a TermDocumentMatrix
 # as a named vector that includes the frequencies
 getMostFrequentTerms <- function(dtm, N){
@@ -68,27 +79,37 @@ myCorpus <- tm_map(myCorpus, stemDocument)
 # Create a TermDocumentMatrix
 myDtm <- TermDocumentMatrix(myCorpus, control = list(minWordLength = 1))
 inspect(myDtm[20:30,20:30])
+```
 
-
-findFreqTerms(myDtm, lowfreq=10)
-
+Display words associated with obama and american
+```{r}
 # which words are associated with "obama"?
 findAssocs(myDtm, 'obama', 0.30)
 
 # which words are associated with "american"?
 findAssocs(myDtm, 'american', 0.30)
 
+```
 
-termDocMatrix <- as.matrix(myDtm)
+Convert to a term matrix
+```{r}
 
 # Transform Data into an Adjacency Matrix
+termDocMatrix <- as.matrix(myDtm)
+
 # change it to a Boolean matrix
 termDocMatrix[termDocMatrix>=1] <- 1
+
 # transform into a term-term adjacency matrix
 termMatrix <- termDocMatrix %*% t(termDocMatrix)
+
 # inspect terms numbered 5 to 10
 termMatrix[5:10,5:10]
+```
 
+The corpus is large, and we can't see clearly a large graph so we are using only a few
+frequent items.
+```{r}
 library(igraph)
 
 # Get the most frequent words
@@ -98,6 +119,8 @@ frequentTermMatrix <- termMatrix[names(frequent),names(frequent)]
 # make a binary matrix
 frequentTermMatrix[frequentTermMatrix>1] <- 1
 g <- graph.adjacency(frequentTermMatrix, mode = "undirected")
+
+# remove self loops
 g <- simplify(g)
 V(g)$degree <- degree(g)
 

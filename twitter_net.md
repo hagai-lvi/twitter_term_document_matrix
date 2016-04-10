@@ -3,21 +3,23 @@ Hagai Levi
 9 April 2016  
 
 
+Based on http://www.rdatamining.com/examples/text-mining
+
+
 
 
 ```r
-# This is based on http://www.rdatamining.com/examples/text-mining
-
-setwd('/Users/hagai_lvi/tmp/data_scientist/assignment_3')
-source('./credentials.R')
 library(twitteR)
 
+# set twitter credentials
 setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_token_secret)
 ```
 
 ```
 ## [1] "Using direct authentication"
 ```
+
+Now, we gather tweets of the user BarackObama
 
 ```r
 maxID <- NULL
@@ -30,7 +32,11 @@ while(n_tweets < N_TWEETS) {
   tweets <- append(tweets, tmp)
   n_tweets <- length(tweets)
 }
+```
 
+Extract a corpus and a TermDocumentMatrix
+
+```r
 # This function returns the most frequent terms in a TermDocumentMatrix
 # as a named vector that includes the frequencies
 getMostFrequentTerms <- function(dtm, N){
@@ -106,26 +112,7 @@ inspect(myDtm[20:30,20:30])
 ##   alway       0  0  0  0  0  0  0  0  0  0  0
 ```
 
-```r
-findFreqTerms(myDtm, lowfreq=10)
-```
-
-```
-##  [1] "<U+2014>presid" "actonclim"    "add"          "agre"        
-##  [5] "america"      "american"     "chang"        "check"       
-##  [9] "climat"       "court"        "day"          "deadlin"     
-## [13] "deserv"       "doyourjob"    "economi"      "fair"        
-## [17] "fight"        "garland"      "get"          "getcov"      
-## [21] "give"         "growth"       "hear"         "help"        
-## [25] "job"          "judg"         "last"         "live"        
-## [29] "merrick"      "name"         "nomin"        "nomine"      
-## [33] "now"          "obama"        "obamacar"     "ofa"         
-## [37] "presid"       "progress"     "read"         "scotus"      
-## [41] "senat"        "sotu"         "speak"        "stopgunviol" 
-## [45] "support"      "suprem"       "time"         "today"       
-## [49] "tune"         "vote"         "watch"        "work"        
-## [53] "year"
-```
+Display words associated with obama and american
 
 ```r
 # which words are associated with "obama"?
@@ -149,14 +136,18 @@ findAssocs(myDtm, 'american', 0.30)
 ##            0.41            0.31
 ```
 
+Convert to a term matrix
+
 ```r
+# Transform Data into an Adjacency Matrix
 termDocMatrix <- as.matrix(myDtm)
 
-# Transform Data into an Adjacency Matrix
 # change it to a Boolean matrix
 termDocMatrix[termDocMatrix>=1] <- 1
+
 # transform into a term-term adjacency matrix
 termMatrix <- termDocMatrix %*% t(termDocMatrix)
+
 # inspect terms numbered 5 to 10
 termMatrix[5:10,5:10]
 ```
@@ -171,6 +162,9 @@ termMatrix[5:10,5:10]
 ##   <U+2019>ve              0          0          0          0          2   0
 ##   abl                   0          0          0          0          0   2
 ```
+
+The corpus is large, and we can't see clearly a large graph so we are using only a few
+frequent items.
 
 ```r
 library(igraph)
@@ -201,6 +195,8 @@ frequentTermMatrix <- termMatrix[names(frequent),names(frequent)]
 # make a binary matrix
 frequentTermMatrix[frequentTermMatrix>1] <- 1
 g <- graph.adjacency(frequentTermMatrix, mode = "undirected")
+
+# remove self loops
 g <- simplify(g)
 V(g)$degree <- degree(g)
 
@@ -211,7 +207,7 @@ lay <- layout.kamada.kawai(g)
 plot(g, layout=lay)
 ```
 
-![](twitter_net_files/figure-html/unnamed-chunk-1-1.png)
+![](twitter_net_files/figure-html/unnamed-chunk-7-1.png)
 
 ```r
 # Now add clustering to the graph
@@ -219,4 +215,4 @@ community <- walktrap.community(g)
 plot(g, layout=lay, vertex.size=5, vertex.color=community$membership, asp=FALSE)
 ```
 
-![](twitter_net_files/figure-html/unnamed-chunk-1-2.png)
+![](twitter_net_files/figure-html/unnamed-chunk-7-2.png)
