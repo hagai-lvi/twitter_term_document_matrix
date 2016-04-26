@@ -12,12 +12,12 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 Based on http://www.rdatamining.com/examples/text-mining
 
-```{r, echo=FALSE}
+```{r, results='hide'}
 setwd('/Users/hagai_lvi/tmp/data_scientist/assignment_3')
 source('./credentials.R')
 ```
 
-```{r}
+```{r, results='hide'}
 library(twitteR)
 
 # set twitter credentials
@@ -136,7 +136,18 @@ plot(g, layout=lay, vertex.size=5, vertex.color=community$membership, asp=FALSE)
 
 ```
 
-We want to show the betweenness of each of each term: 
+We got `r dim(sizes(community))` communities. The size of each community:
+
+```{r}
+sizes(community)
+```
+
+The modularity we got:
+```{r}
+modularity(community)
+```
+
+We want to show the betweenness of each term: 
 ```{r}
 t(betweenness(g))
 ```
