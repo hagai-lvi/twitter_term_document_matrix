@@ -75,7 +75,7 @@ cat(sprintf("Got %i rows", length(tweets_text)))
 ```
 
 ```
-Got 312 rows
+## Got 312 rows
 ```
 
 ```r
@@ -108,25 +108,25 @@ inspect(myDtm[20:30,20:30])
 ```
 
 ```
-<<TermDocumentMatrix (terms: 11, documents: 11)>>
-Non-/sparse entries: 0/121
-Sparsity           : 100%
-Maximal term length: 11
-Weighting          : term frequency (tf)
-
-             Docs
-Terms         20 21 22 23 24 25 26 27 28 29 30
-  alreadi      0  0  0  0  0  0  0  0  0  0  0
-  also         0  0  0  0  0  0  0  0  0  0  0
-  alway        0  0  0  0  0  0  0  0  0  0  0
-  america      0  0  0  0  0  0  0  0  0  0  0
-  american     0  0  0  0  0  0  0  0  0  0  0
-  americaus    0  0  0  0  0  0  0  0  0  0  0
-  anniversari  0  0  0  0  0  0  0  0  0  0  0
-  announc      0  0  0  0  0  0  0  0  0  0  0
-  anoth        0  0  0  0  0  0  0  0  0  0  0
-  answer       0  0  0  0  0  0  0  0  0  0  0
-  anybodi      0  0  0  0  0  0  0  0  0  0  0
+## <<TermDocumentMatrix (terms: 11, documents: 11)>>
+## Non-/sparse entries: 0/121
+## Sparsity           : 100%
+## Maximal term length: 11
+## Weighting          : term frequency (tf)
+## 
+##              Docs
+## Terms         20 21 22 23 24 25 26 27 28 29 30
+##   alreadi      0  0  0  0  0  0  0  0  0  0  0
+##   also         0  0  0  0  0  0  0  0  0  0  0
+##   alway        0  0  0  0  0  0  0  0  0  0  0
+##   america      0  0  0  0  0  0  0  0  0  0  0
+##   american     0  0  0  0  0  0  0  0  0  0  0
+##   americaus    0  0  0  0  0  0  0  0  0  0  0
+##   anniversari  0  0  0  0  0  0  0  0  0  0  0
+##   announc      0  0  0  0  0  0  0  0  0  0  0
+##   anoth        0  0  0  0  0  0  0  0  0  0  0
+##   answer       0  0  0  0  0  0  0  0  0  0  0
+##   anybodi      0  0  0  0  0  0  0  0  0  0  0
 ```
 
 Display words associated with Obama and american
@@ -137,9 +137,9 @@ findAssocs(myDtm, 'obama', 0.30)
 ```
 
 ```
-$obama
-upresid  presid    sotu    live 
-   0.61    0.58    0.41    0.30 
+## $obama
+## upresid  presid    sotu    live 
+##    0.61    0.58    0.41    0.30
 ```
 
 ```r
@@ -148,9 +148,9 @@ findAssocs(myDtm, 'american', 0.30)
 ```
 
 ```
-$american
-          cover httpstcoxtyztaa 
-           0.44            0.44 
+## $american
+##           cover httpstcoxtyztaa 
+##            0.44            0.44
 ```
 
 Convert to a term matrix
@@ -170,14 +170,14 @@ termMatrix[15:20,15:20]
 ```
 
 ```
-           Terms
-Terms       agre agreement ahead ainut almost alreadi
-  agre        10         0     0     0      0       0
-  agreement    0         2     0     0      0       0
-  ahead        0         0     2     0      0       0
-  ainut        0         0     0     1      0       0
-  almost       0         0     0     0      1       0
-  alreadi      0         0     0     0      0       1
+##            Terms
+## Terms       agre agreement ahead ainut almost alreadi
+##   agre        10         0     0     0      0       0
+##   agreement    0         2     0     0      0       0
+##   ahead        0         0     2     0      0       0
+##   ainut        0         0     0     1      0       0
+##   almost       0         0     0     0      1       0
+##   alreadi      0         0     0     0      0       1
 ```
 
 The corpus is large, and we can't see clearly a large graph so we are using only a few
@@ -233,9 +233,9 @@ sizes(community)
 ```
 
 ```
-Community sizes
- 1  2 
-14  6 
+## Community sizes
+##  1  2 
+## 14  6
 ```
 
 The modularity we got:
@@ -245,7 +245,7 @@ modularity(community)
 ```
 
 ```
-[1] 0.1011842
+## [1] 0.1011842
 ```
 
 ### `edge betweenness` clustering
@@ -268,9 +268,9 @@ sizes(community)
 ```
 
 ```
-Community sizes
- 1  2  3  4  5  6  7  8  9 10 
-11  1  1  1  1  1  1  1  1  1 
+## Community sizes
+##  1  2  3  4  5  6  7  8  9 10 
+## 11  1  1  1  1  1  1  1  1  1
 ```
 
 The modularity of `edge betweenness`:
@@ -280,7 +280,7 @@ modularity(community)
 ```
 
 ```
-[1] 0.01422903
+## [1] 0.01422903
 ```
 
 ## Centrality metrics
@@ -293,12 +293,12 @@ t(betweenness(g))
 ```
 
 ```
-        obama   presid  upresid     sotu doyourjob    fair    senat
-[1,] 6.452417 8.633766 3.536147 1.378211  3.294877 8.79329 1.339286
-     actonclim      job     year     hear     work   garland      judg
-[1,] 0.7944444 10.78615 3.220238 4.641667 1.569877 0.8511905 0.8511905
-       scotus    suprem     court     chang    climat american
-[1,] 2.122222 0.7873377 0.2159091 0.8289683 0.8289683 2.073846
+##         obama   presid  upresid     sotu doyourjob    fair    senat
+## [1,] 6.452417 8.633766 3.536147 1.378211  3.294877 8.79329 1.339286
+##      actonclim      job     year     hear     work   garland      judg
+## [1,] 0.7944444 10.78615 3.220238 4.641667 1.569877 0.8511905 0.8511905
+##        scotus    suprem     court     chang    climat american
+## [1,] 2.122222 0.7873377 0.2159091 0.8289683 0.8289683 2.073846
 ```
 
 And plot it on the graph, together with the clusters:
@@ -316,14 +316,14 @@ t(closeness(g))
 ```
 
 ```
-          obama     presid upresid       sotu  doyourjob fair      senat
-[1,] 0.04761905 0.04761905    0.04 0.03846154 0.04166667 0.05 0.03846154
-      actonclim        job       year       hear       work    garland
-[1,] 0.03571429 0.05263158 0.03846154 0.04347826 0.03703704 0.03703704
-           judg     scotus     suprem      court      chang     climat
-[1,] 0.03703704 0.03846154 0.03571429 0.03333333 0.03571429 0.03571429
-       american
-[1,] 0.03846154
+##           obama     presid upresid       sotu  doyourjob fair      senat
+## [1,] 0.04761905 0.04761905    0.04 0.03846154 0.04166667 0.05 0.03846154
+##       actonclim        job       year       hear       work    garland
+## [1,] 0.03571429 0.05263158 0.03846154 0.04347826 0.03703704 0.03703704
+##            judg     scotus     suprem      court      chang     climat
+## [1,] 0.03703704 0.03846154 0.03571429 0.03333333 0.03571429 0.03571429
+##        american
+## [1,] 0.03846154
 ```
 
 ```r
@@ -341,12 +341,12 @@ t(g.closeness.normalized)
 ```
 
 ```
-        obama   presid upresid     sotu doyourjob fair    senat actonclim
-[1,] 14.28571 14.28571      12 11.53846      12.5   15 11.53846  10.71429
-          job     year     hear     work  garland     judg   scotus
-[1,] 15.78947 11.53846 13.04348 11.11111 11.11111 11.11111 11.53846
-       suprem court    chang   climat american
-[1,] 10.71429    10 10.71429 10.71429 11.53846
+##         obama   presid upresid     sotu doyourjob fair    senat actonclim
+## [1,] 14.28571 14.28571      12 11.53846      12.5   15 11.53846  10.71429
+##           job     year     hear     work  garland     judg   scotus
+## [1,] 15.78947 11.53846 13.04348 11.11111 11.11111 11.11111 11.53846
+##        suprem court    chang   climat american
+## [1,] 10.71429    10 10.71429 10.71429 11.53846
 ```
 
 ```r
@@ -367,12 +367,12 @@ eigen_values
 ```
 
 ```
-        obama        presid       upresid          sotu     doyourjob 
- 1.427923e+01  5.665468e+00  3.114183e+00  1.985561e+00  1.928212e+00 
-         fair         senat     actonclim           job          year 
- 1.240961e+00  9.874387e-01  4.901258e-01  3.329576e-01  1.606521e-16 
-         hear          work       garland          judg        scotus 
- 1.195293e-17 -2.664535e-15 -1.716207e-01 -4.733044e-01 -7.589712e-01 
-       suprem         court         chang        climat      american 
--1.009830e+00 -1.237362e+00 -1.410289e+00 -2.260556e+00 -2.702208e+00 
+##         obama        presid       upresid          sotu     doyourjob 
+##  1.427923e+01  5.665468e+00  3.114183e+00  1.985561e+00  1.928212e+00 
+##          fair         senat     actonclim           job          year 
+##  1.240961e+00  9.874387e-01  4.901258e-01  3.329576e-01  1.606521e-16 
+##          hear          work       garland          judg        scotus 
+##  1.195293e-17 -2.664535e-15 -1.716207e-01 -4.733044e-01 -7.589712e-01 
+##        suprem         court         chang        climat      american 
+## -1.009830e+00 -1.237362e+00 -1.410289e+00 -2.260556e+00 -2.702208e+00
 ```

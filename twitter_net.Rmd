@@ -9,8 +9,7 @@ output:
 ---
 
 ```{r global_options, setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = NA) # remove `##` from prints
+knitr::opts_chunk$set(echo = TRUE) # remove `##` from prints
 ```
 
 A preface to this work can be found in the [README](README.md).  
