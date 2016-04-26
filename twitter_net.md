@@ -40,6 +40,9 @@ while(n_tweets < N_TWEETS) {
   tweets <- append(tweets, tmp)
   n_tweets <- length(tweets)
 }
+
+# Create a dataframe from the data
+df <- do.call("rbind", lapply(tweets, as.data.frame))
 ```
 
 ## Basic exploration of the data
@@ -54,9 +57,6 @@ getMostFrequentTerms <- function(dtm, N){
   head(v, N)
 }
 
-# Create a dataframe from the data
-df <- do.call("rbind", lapply(tweets, as.data.frame))
-
 cat(sprintf("Matrix dimensions: %i cols, %i rows", ncol(df), nrow(df)))
 ```
 
@@ -66,7 +66,6 @@ cat(sprintf("Matrix dimensions: %i cols, %i rows", ncol(df), nrow(df)))
 
 ```r
 library(tm)
-
 
 # build a corpus, which is a collection of text documents
 # VectorSource specifies that the source is character vectors.
