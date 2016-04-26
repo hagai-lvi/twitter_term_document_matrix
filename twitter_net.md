@@ -26,7 +26,8 @@ library(twitteR)
 setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_token_secret)
 ```
 
-Now, we gather tweets of the user BarackObama
+## Collecting data
+The data that we will be using is tweets by Barack Obama.  
 
 ```r
 maxID <- NULL
@@ -41,7 +42,8 @@ while(n_tweets < N_TWEETS) {
 }
 ```
 
-Extract a corpus and a TermDocumentMatrix
+## Basic exploration of the data
+Extract a corpus and a TermDocumentMatrix:
 
 ```r
 # This function returns the most frequent terms in a TermDocumentMatrix
@@ -176,7 +178,8 @@ frequent <- getMostFrequentTerms(myDtm, 20)
 frequentTermMatrix <- termMatrix[names(frequent),names(frequent)]
 ```
 
-Now, we construct a graph from the most frequent terms
+## Basic graphs
+We construct a graph from the most frequent terms:
 
 ```r
 # make a binary matrix
@@ -196,7 +199,10 @@ plot(g, layout=lay)
 
 ![](twitter_net_files/figure-html/unnamed-chunk-8-1.png)
 
-Adding clustering:
+## Clustering
+
+### `walktrap` clustering
+Adding clustering using the `walktrap` strategy:
 
 ```r
 # Now add clustering to the graph
@@ -229,6 +235,44 @@ modularity(community)
 ## [1] 0.1143865
 ```
 
+### `edge betweenness` clustering
+
+Now clustering using the `edge betweenness` strategy:
+
+```r
+# Now add clustering to the graph
+community <- edge.betweenness.community(g)
+plot(g, layout=lay, vertex.size=5, vertex.color=community$membership, asp=FALSE)
+```
+
+![](twitter_net_files/figure-html/unnamed-chunk-12-1.png)
+
+We got 9 communities. The size of each community:
+
+
+```r
+sizes(community)
+```
+
+```
+## Community sizes
+##  1  2  3  4  5  6  7  8  9 
+## 12  1  1  1  1  1  1  1  1
+```
+
+The modularity of `edge betweenness`:
+
+```r
+modularity(community)
+```
+
+```
+## [1] 0.0303288
+```
+
+## Centrality metrics
+
+### Betweenness
 We want to show the betweenness of each term: 
 
 ```r
@@ -244,15 +288,15 @@ t(betweenness(g))
 ## [1,] 1.172222 0.7873377 0.2159091 0.9289683 0.2833333  3.08456
 ```
 
-And show it on the graph, together with the clusters:
+And plot it on the graph, together with the clusters:
 
 ```r
 plot(g, layout=lay, vertex.color=community$membership, vertex.size=betweenness(g), asp=FALSE)
 ```
 
-![](twitter_net_files/figure-html/unnamed-chunk-13-1.png)
+![](twitter_net_files/figure-html/unnamed-chunk-16-1.png)
 
-Same goes for closeness:
+### Closeness
 
 ```r
 t(closeness(g))
@@ -273,7 +317,7 @@ t(closeness(g))
 plot(g, layout=lay, vertex.color=community$membership, vertex.size=closeness(g), asp=FALSE)
 ```
 
-![](twitter_net_files/figure-html/unnamed-chunk-14-1.png)
+![](twitter_net_files/figure-html/unnamed-chunk-17-1.png)
 
 And as closeness generates small values, we will increases the vertexes size:
 
@@ -296,10 +340,12 @@ t(g.closeness.normalized)
 plot(g, layout=lay, vertex.color=community$membership, vertex.size=g.closeness.normalized, asp=FALSE)
 ```
 
-![](twitter_net_files/figure-html/unnamed-chunk-15-1.png)
+![](twitter_net_files/figure-html/unnamed-chunk-18-1.png)
 
-Same goes for eigen values:  
+### Eigen values
+
 **For eigenvalues, we will not show a graph, due to negative values.**
+
 
 ```r
 eigen_values <- eigen(frequentTermMatrix)$values

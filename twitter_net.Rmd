@@ -31,7 +31,8 @@ library(twitteR)
 setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_token_secret)
 ```
 
-Now, we gather tweets of the user BarackObama
+## Collecting data
+The data that we will be using is tweets by Barack Obama.  
 ```{r, echo=TRUE}
 maxID <- NULL
 n_tweets <- 0
@@ -45,7 +46,8 @@ while(n_tweets < N_TWEETS) {
 }
 ```
 
-Extract a corpus and a TermDocumentMatrix
+## Basic exploration of the data
+Extract a corpus and a TermDocumentMatrix:
 ```{r, message=FALSE}
 # This function returns the most frequent terms in a TermDocumentMatrix
 # as a named vector that includes the frequencies
@@ -124,7 +126,8 @@ frequent <- getMostFrequentTerms(myDtm, 20)
 frequentTermMatrix <- termMatrix[names(frequent),names(frequent)]
 ```
 
-Now, we construct a graph from the most frequent terms
+## Basic graphs
+We construct a graph from the most frequent terms:
 ```{r}
 # make a binary matrix
 frequentTermMatrix[frequentTermMatrix>1] <- 1
@@ -141,7 +144,10 @@ lay <- layout.kamada.kawai(g)
 plot(g, layout=lay)
 ```
 
-Adding clustering:
+## Clustering
+
+### `walktrap` clustering
+Adding clustering using the `walktrap` strategy:
 ```{r}
 # Now add clustering to the graph
 community <- walktrap.community(g)
@@ -160,17 +166,41 @@ The modularity we got:
 modularity(community)
 ```
 
+### `edge betweenness` clustering
+
+Now clustering using the `edge betweenness` strategy:
+```{r}
+# Now add clustering to the graph
+community <- edge.betweenness.community(g)
+plot(g, layout=lay, vertex.size=5, vertex.color=community$membership, asp=FALSE)
+
+```
+
+We got `r dim(sizes(community))` communities. The size of each community:
+
+```{r}
+sizes(community)
+```
+
+The modularity of `edge betweenness`:
+```{r}
+modularity(community)
+```
+
+## Centrality metrics
+
+### Betweenness
 We want to show the betweenness of each term: 
 ```{r}
 t(betweenness(g))
 ```
 
-And show it on the graph, together with the clusters:
+And plot it on the graph, together with the clusters:
 ```{r}
 plot(g, layout=lay, vertex.color=community$membership, vertex.size=betweenness(g), asp=FALSE)
 ```
 
-Same goes for closeness:
+### Closeness
 ```{r}
 t(closeness(g))
 plot(g, layout=lay, vertex.color=community$membership, vertex.size=closeness(g), asp=FALSE)
@@ -184,8 +214,10 @@ t(g.closeness.normalized)
 plot(g, layout=lay, vertex.color=community$membership, vertex.size=g.closeness.normalized, asp=FALSE)
 ```
 
-Same goes for eigen values:  
+### Eigen values
+
 **For eigenvalues, we will not show a graph, due to negative values.**
+
 ```{r}
 eigen_values <- eigen(frequentTermMatrix)$values
 names(eigen_values) <- colnames(frequentTermMatrix)
