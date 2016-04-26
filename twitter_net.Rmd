@@ -159,3 +159,11 @@ g.closeness.normalized <- 10 * (g.closeness / min(g.closeness))
 t(g.closeness.normalized)
 plot(g, layout=lay, vertex.color=community$membership, vertex.size=g.closeness.normalized, asp=FALSE)
 ```
+
+Same goes for eigen values:  
+**For eigenvalues, we will not show a graph, due to negative values.**
+```{r}
+eigen_values <- eigen(frequentTermMatrix)$values
+names(eigen_values) <- colnames(frequentTermMatrix)
+eigen_values
+```
