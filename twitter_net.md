@@ -30,19 +30,33 @@ setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_token_se
 The data that we will be using is tweets by Barack Obama.  
 
 ```r
-maxID <- NULL
-n_tweets <- 0
-N_TWEETS <- 300
-tweets <- NULL
-while(n_tweets < N_TWEETS) {
-  tmp <- userTimeline("BarackObama", n=200, maxID = maxID)
-  maxID <- tmp[[length(tmp)]]$id  
-  tweets <- append(tweets, tmp)
-  n_tweets <- length(tweets)
+# Create the data dir if it doesn't exist
+if(! file.exists('data')){
+  dir.create('data')
 }
 
-# Create a dataframe from the data
-df <- do.call("rbind", lapply(tweets, as.data.frame))
+if(! file.exists('./data/tweets.df')){
+  maxID <- NULL
+  n_tweets <- 0
+  N_TWEETS <- 300
+  tweets <- NULL
+  while(n_tweets < N_TWEETS) {
+    tmp <- userTimeline("BarackObama", n=200, maxID = maxID)
+    maxID <- tmp[[length(tmp)]]$id  
+    tweets <- append(tweets, tmp)
+    n_tweets <- length(tweets)
+  }
+  
+  # Create a dataframe from the data
+  df <- do.call("rbind", lapply(tweets, as.data.frame))
+  
+  # Write the data to file
+  tweets_text <- df$text
+  write.table(tweets_text, file='./data/tweets.df')
+
+} else{
+  tweets_text <- as.vector(unlist(read.table('./data/tweets.df')))
+}
 ```
 
 ## Basic exploration of the data
@@ -57,11 +71,11 @@ getMostFrequentTerms <- function(dtm, N){
   head(v, N)
 }
 
-cat(sprintf("Matrix dimensions: %i cols, %i rows", ncol(df), nrow(df)))
+cat(sprintf("Got %i rows", length(tweets_text)))
 ```
 
 ```
-## Matrix dimensions: 16 cols, 312 rows
+Got 312 rows
 ```
 
 ```r
@@ -69,7 +83,7 @@ library(tm)
 
 # build a corpus, which is a collection of text documents
 # VectorSource specifies that the source is character vectors.
-myCorpus <- Corpus(VectorSource(df$text))
+myCorpus <- Corpus(VectorSource(tweets_text))
 
 # all lowercase
 myCorpus <- tm_map(myCorpus, content_transformer(tolower))
@@ -94,25 +108,25 @@ inspect(myDtm[20:30,20:30])
 ```
 
 ```
-## <<TermDocumentMatrix (terms: 11, documents: 11)>>
-## Non-/sparse entries: 0/121
-## Sparsity           : 100%
-## Maximal term length: 9
-## Weighting          : term frequency (tf)
-## 
-##                Docs
-## Terms           20 21 22 23 24 25 26 27 28 29 30
-##   ago            0  0  0  0  0  0  0  0  0  0  0
-##   agre           0  0  0  0  0  0  0  0  0  0  0
-##   agreement      0  0  0  0  0  0  0  0  0  0  0
-##   ahead          0  0  0  0  0  0  0  0  0  0  0
-##   ain<U+2019>t     0  0  0  0  0  0  0  0  0  0  0
-##   almost         0  0  0  0  0  0  0  0  0  0  0
-##   alreadi        0  0  0  0  0  0  0  0  0  0  0
-##   also           0  0  0  0  0  0  0  0  0  0  0
-##   alway          0  0  0  0  0  0  0  0  0  0  0
-##   america        0  0  0  0  0  0  0  0  0  0  0
-##   america<U+2019>  0  0  0  0  0  0  0  0  0  0  0
+<<TermDocumentMatrix (terms: 11, documents: 11)>>
+Non-/sparse entries: 0/121
+Sparsity           : 100%
+Maximal term length: 11
+Weighting          : term frequency (tf)
+
+             Docs
+Terms         20 21 22 23 24 25 26 27 28 29 30
+  alreadi      0  0  0  0  0  0  0  0  0  0  0
+  also         0  0  0  0  0  0  0  0  0  0  0
+  alway        0  0  0  0  0  0  0  0  0  0  0
+  america      0  0  0  0  0  0  0  0  0  0  0
+  american     0  0  0  0  0  0  0  0  0  0  0
+  americaus    0  0  0  0  0  0  0  0  0  0  0
+  anniversari  0  0  0  0  0  0  0  0  0  0  0
+  announc      0  0  0  0  0  0  0  0  0  0  0
+  anoth        0  0  0  0  0  0  0  0  0  0  0
+  answer       0  0  0  0  0  0  0  0  0  0  0
+  anybodi      0  0  0  0  0  0  0  0  0  0  0
 ```
 
 Display words associated with obama and american
@@ -123,9 +137,9 @@ findAssocs(myDtm, 'obama', 0.30)
 ```
 
 ```
-## $obama
-## <U+2014>presid       presid         sotu 
-##         0.61         0.57         0.42
+$obama
+upresid  presid    sotu    live 
+   0.61    0.58    0.41    0.30 
 ```
 
 ```r
@@ -134,9 +148,9 @@ findAssocs(myDtm, 'american', 0.30)
 ```
 
 ```
-## $american
-##           cover httpstcoxtyztaa 
-##            0.44            0.44
+$american
+          cover httpstcoxtyztaa 
+           0.44            0.44 
 ```
 
 Convert to a term matrix
@@ -156,14 +170,14 @@ termMatrix[15:20,15:20]
 ```
 
 ```
-##          Terms
-## Terms     add address adult advanc afford ago
-##   add      11       0     0      0      0   0
-##   address   0       4     0      0      0   0
-##   adult     0       0     1      0      0   0
-##   advanc    0       0     0      2      0   0
-##   afford    0       0     0      0      3   0
-##   ago       0       0     0      0      0   3
+           Terms
+Terms       agre agreement ahead ainut almost alreadi
+  agre        10         0     0     0      0       0
+  agreement    0         2     0     0      0       0
+  ahead        0         0     2     0      0       0
+  ainut        0         0     0     1      0       0
+  almost       0         0     0     0      1       0
+  alreadi      0         0     0     0      0       1
 ```
 
 The corpus is large, and we can't see clearly a large graph so we are using only a few
@@ -219,9 +233,9 @@ sizes(community)
 ```
 
 ```
-## Community sizes
-##  1  2 
-## 12  8
+Community sizes
+ 1  2 
+14  6 
 ```
 
 The modularity we got:
@@ -231,7 +245,7 @@ modularity(community)
 ```
 
 ```
-## [1] 0.1143865
+[1] 0.1011842
 ```
 
 ### `edge betweenness` clustering
@@ -246,7 +260,7 @@ plot(g, layout=lay, vertex.size=5, vertex.color=community$membership, asp=FALSE)
 
 ![](twitter_net_files/figure-html/unnamed-chunk-12-1.png)
 
-We got 9 communities. The size of each community:
+We got 10 communities. The size of each community:
 
 
 ```r
@@ -254,9 +268,9 @@ sizes(community)
 ```
 
 ```
-## Community sizes
-##  1  2  3  4  5  6  7  8  9 
-## 12  1  1  1  1  1  1  1  1
+Community sizes
+ 1  2  3  4  5  6  7  8  9 10 
+11  1  1  1  1  1  1  1  1  1 
 ```
 
 The modularity of `edge betweenness`:
@@ -266,7 +280,7 @@ modularity(community)
 ```
 
 ```
-## [1] 0.0303288
+[1] 0.01422903
 ```
 
 ## Centrality metrics
@@ -279,12 +293,12 @@ t(betweenness(g))
 ```
 
 ```
-##         obama   presid   <U+2014>presid     sotu doyourjob     fair    senat
-## [1,] 7.043687 9.198449       3.738528 1.413925  3.307576 7.096068 1.339286
-##      actonclim      job     year     hear     work   garland      judg
-## [1,] 0.6761905 11.37742 4.178571 4.686111 1.741703 0.8650794 0.8650794
-##        scotus    suprem     court     chang   economi american
-## [1,] 1.172222 0.7873377 0.2159091 0.9289683 0.2833333  3.08456
+        obama   presid  upresid     sotu doyourjob    fair    senat
+[1,] 6.452417 8.633766 3.536147 1.378211  3.294877 8.79329 1.339286
+     actonclim      job     year     hear     work   garland      judg
+[1,] 0.7944444 10.78615 3.220238 4.641667 1.569877 0.8511905 0.8511905
+       scotus    suprem     court     chang    climat american
+[1,] 2.122222 0.7873377 0.2159091 0.8289683 0.8289683 2.073846
 ```
 
 And plot it on the graph, together with the clusters:
@@ -302,14 +316,14 @@ t(closeness(g))
 ```
 
 ```
-##           obama     presid   <U+2014>presid       sotu  doyourjob       fair
-## [1,] 0.04761905 0.04761905           0.04 0.03846154 0.04166667 0.04761905
-##           senat  actonclim        job year       hear       work
-## [1,] 0.03846154 0.03571429 0.05263158 0.04 0.04347826 0.03703704
-##         garland       judg     scotus     suprem      court      chang
-## [1,] 0.03703704 0.03703704 0.03703704 0.03571429 0.03333333 0.03448276
-##         economi american
-## [1,] 0.03448276     0.04
+          obama     presid upresid       sotu  doyourjob fair      senat
+[1,] 0.04761905 0.04761905    0.04 0.03846154 0.04166667 0.05 0.03846154
+      actonclim        job       year       hear       work    garland
+[1,] 0.03571429 0.05263158 0.03846154 0.04347826 0.03703704 0.03703704
+           judg     scotus     suprem      court      chang     climat
+[1,] 0.03703704 0.03846154 0.03571429 0.03333333 0.03571429 0.03571429
+       american
+[1,] 0.03846154
 ```
 
 ```r
@@ -327,12 +341,12 @@ t(g.closeness.normalized)
 ```
 
 ```
-##         obama   presid   <U+2014>presid     sotu doyourjob     fair    senat
-## [1,] 14.28571 14.28571             12 11.53846      12.5 14.28571 11.53846
-##      actonclim      job year     hear     work  garland     judg   scotus
-## [1,]  10.71429 15.78947   12 13.04348 11.11111 11.11111 11.11111 11.11111
-##        suprem court    chang  economi american
-## [1,] 10.71429    10 10.34483 10.34483       12
+        obama   presid upresid     sotu doyourjob fair    senat actonclim
+[1,] 14.28571 14.28571      12 11.53846      12.5   15 11.53846  10.71429
+          job     year     hear     work  garland     judg   scotus
+[1,] 15.78947 11.53846 13.04348 11.11111 11.11111 11.11111 11.53846
+       suprem court    chang   climat american
+[1,] 10.71429    10 10.71429 10.71429 11.53846
 ```
 
 ```r
@@ -353,12 +367,12 @@ eigen_values
 ```
 
 ```
-##         obama        presid <U+2014>presid          sotu     doyourjob 
-##  1.420202e+01  5.779579e+00  3.021264e+00  2.066587e+00  1.715053e+00 
-##          fair         senat     actonclim           job          year 
-##  1.350975e+00  1.008737e+00  5.667674e-01  3.359059e-01  1.872261e-16 
-##          hear          work       garland          judg        scotus 
-##  1.227066e-16 -1.776357e-15 -1.738442e-01 -5.949431e-01 -7.581790e-01 
-##        suprem         court         chang       economi      american 
-## -9.208352e-01 -1.257237e+00 -1.548359e+00 -2.331891e+00 -2.461598e+00
+        obama        presid       upresid          sotu     doyourjob 
+ 1.427923e+01  5.665468e+00  3.114183e+00  1.985561e+00  1.928212e+00 
+         fair         senat     actonclim           job          year 
+ 1.240961e+00  9.874387e-01  4.901258e-01  3.329576e-01  1.606521e-16 
+         hear          work       garland          judg        scotus 
+ 1.195293e-17 -2.664535e-15 -1.716207e-01 -4.733044e-01 -7.589712e-01 
+       suprem         court         chang        climat      american 
+-1.009830e+00 -1.237362e+00 -1.410289e+00 -2.260556e+00 -2.702208e+00 
 ```

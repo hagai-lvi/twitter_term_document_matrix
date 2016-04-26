@@ -7,8 +7,9 @@ output:
     keep_md: yes
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r global_options, setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = NA) # remove `##` from prints
 ```
 
 A preface to this work can be found in the [README](README.md).  
@@ -34,20 +35,34 @@ setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_token_se
 ## Collecting data
 The data that we will be using is tweets by Barack Obama.  
 ```{r, echo=TRUE}
-maxID <- NULL
-n_tweets <- 0
-N_TWEETS <- 300
-tweets <- NULL
-while(n_tweets < N_TWEETS) {
-  tmp <- userTimeline("BarackObama", n=200, maxID = maxID)
-  maxID <- tmp[[length(tmp)]]$id  
-  tweets <- append(tweets, tmp)
-  n_tweets <- length(tweets)
+
+# Create the data dir if it doesn't exist
+if(! file.exists('data')){
+  dir.create('data')
 }
 
-# Create a dataframe from the data
-df <- do.call("rbind", lapply(tweets, as.data.frame))
+if(! file.exists('./data/tweets.df')){
+  maxID <- NULL
+  n_tweets <- 0
+  N_TWEETS <- 300
+  tweets <- NULL
+  while(n_tweets < N_TWEETS) {
+    tmp <- userTimeline("BarackObama", n=200, maxID = maxID)
+    maxID <- tmp[[length(tmp)]]$id  
+    tweets <- append(tweets, tmp)
+    n_tweets <- length(tweets)
+  }
+  
+  # Create a dataframe from the data
+  df <- do.call("rbind", lapply(tweets, as.data.frame))
+  
+  # Write the data to file
+  tweets_text <- df$text
+  write.table(tweets_text, file='./data/tweets.df')
 
+} else{
+  tweets_text <- as.vector(unlist(read.table('./data/tweets.df')))
+}
 ```
 
 ## Basic exploration of the data
@@ -61,13 +76,13 @@ getMostFrequentTerms <- function(dtm, N){
   head(v, N)
 }
 
-cat(sprintf("Matrix dimensions: %i cols, %i rows", ncol(df), nrow(df)))
+cat(sprintf("Got %i rows", length(tweets_text)))
 
 library(tm)
 
 # build a corpus, which is a collection of text documents
 # VectorSource specifies that the source is character vectors.
-myCorpus <- Corpus(VectorSource(df$text))
+myCorpus <- Corpus(VectorSource(tweets_text))
 
 # all lowercase
 myCorpus <- tm_map(myCorpus, content_transformer(tolower))
