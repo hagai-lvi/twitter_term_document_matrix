@@ -10,7 +10,14 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-Based on http://www.rdatamining.com/examples/text-mining
+
+A preface to this work can be found in the [README](README.md).  
+
+We have decided to first show clustering and only then to show the cenrality merics
+so that we can include the clusters in the graph when plotting the cenrality merics,
+even though it is not the order of the tasks in the assignment.  
+
+We have based on http://www.rdatamining.com/examples/text-mining for retrieving the tweets.
 
 ```{r, results='hide'}
 setwd('/Users/hagai_lvi/tmp/data_scientist/assignment_3')
@@ -39,7 +46,7 @@ while(n_tweets < N_TWEETS) {
 ```
 
 Extract a corpus and a TermDocumentMatrix
-```{r}
+```{r, message=FALSE}
 # This function returns the most frequent terms in a TermDocumentMatrix
 # as a named vector that includes the frequencies
 getMostFrequentTerms <- function(dtm, N){
@@ -109,13 +116,16 @@ termMatrix[15:20,15:20]
 
 The corpus is large, and we can't see clearly a large graph so we are using only a few
 frequent items.
-```{r}
+```{r, message=FALSE}
 library(igraph)
 
 # Get the most frequent words
 frequent <- getMostFrequentTerms(myDtm, 20)
 frequentTermMatrix <- termMatrix[names(frequent),names(frequent)]
+```
 
+Now, we construct a graph from the most frequent terms
+```{r}
 # make a binary matrix
 frequentTermMatrix[frequentTermMatrix>1] <- 1
 g <- graph.adjacency(frequentTermMatrix, mode = "undirected")
@@ -129,7 +139,10 @@ V(g)$degree <- degree(g)
 set.seed(100)
 lay <- layout.kamada.kawai(g)
 plot(g, layout=lay)
+```
 
+Adding clustering:
+```{r}
 # Now add clustering to the graph
 community <- walktrap.community(g)
 plot(g, layout=lay, vertex.size=5, vertex.color=community$membership, asp=FALSE)

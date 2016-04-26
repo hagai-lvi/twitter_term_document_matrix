@@ -3,7 +3,14 @@ Hagai Levi
 9 April 2016  
 
 
-Based on http://www.rdatamining.com/examples/text-mining
+
+A preface to this work can be found in the [README](README.md).  
+
+We have decided to first show clustering and only then to show the cenrality merics
+so that we can include the clusters in the graph when plotting the cenrality merics,
+even though it is not the order of the tasks in the assignment.  
+
+We have based on http://www.rdatamining.com/examples/text-mining for retrieving the tweets.
 
 
 ```r
@@ -57,13 +64,8 @@ cat(sprintf("Matrix dimensions: %i cols, %i rows", ncol(df), nrow(df)))
 
 ```r
 library(tm)
-```
 
-```
-## Loading required package: NLP
-```
 
-```r
 # build a corpus, which is a collection of text documents
 # VectorSource specifies that the source is character vectors.
 myCorpus <- Corpus(VectorSource(df$text))
@@ -168,30 +170,15 @@ frequent items.
 
 ```r
 library(igraph)
-```
 
-```
-## 
-## Attaching package: 'igraph'
-```
-
-```
-## The following objects are masked from 'package:stats':
-## 
-##     decompose, spectrum
-```
-
-```
-## The following object is masked from 'package:base':
-## 
-##     union
-```
-
-```r
 # Get the most frequent words
 frequent <- getMostFrequentTerms(myDtm, 20)
 frequentTermMatrix <- termMatrix[names(frequent),names(frequent)]
+```
 
+Now, we construct a graph from the most frequent terms
+
+```r
 # make a binary matrix
 frequentTermMatrix[frequentTermMatrix>1] <- 1
 g <- graph.adjacency(frequentTermMatrix, mode = "undirected")
@@ -207,7 +194,9 @@ lay <- layout.kamada.kawai(g)
 plot(g, layout=lay)
 ```
 
-![](twitter_net_files/figure-html/unnamed-chunk-7-1.png)
+![](twitter_net_files/figure-html/unnamed-chunk-8-1.png)
+
+Adding clustering:
 
 ```r
 # Now add clustering to the graph
@@ -215,7 +204,7 @@ community <- walktrap.community(g)
 plot(g, layout=lay, vertex.size=5, vertex.color=community$membership, asp=FALSE)
 ```
 
-![](twitter_net_files/figure-html/unnamed-chunk-7-2.png)
+![](twitter_net_files/figure-html/unnamed-chunk-9-1.png)
 
 We got 2 communities. The size of each community:
 
@@ -261,7 +250,7 @@ And show it on the graph, together with the clusters:
 plot(g, layout=lay, vertex.color=community$membership, vertex.size=betweenness(g), asp=FALSE)
 ```
 
-![](twitter_net_files/figure-html/unnamed-chunk-11-1.png)
+![](twitter_net_files/figure-html/unnamed-chunk-13-1.png)
 
 Same goes for closeness:
 
@@ -284,7 +273,7 @@ t(closeness(g))
 plot(g, layout=lay, vertex.color=community$membership, vertex.size=closeness(g), asp=FALSE)
 ```
 
-![](twitter_net_files/figure-html/unnamed-chunk-12-1.png)
+![](twitter_net_files/figure-html/unnamed-chunk-14-1.png)
 
 And as closeness generates small values, we will increases the vertexes size:
 
@@ -307,7 +296,7 @@ t(g.closeness.normalized)
 plot(g, layout=lay, vertex.color=community$membership, vertex.size=g.closeness.normalized, asp=FALSE)
 ```
 
-![](twitter_net_files/figure-html/unnamed-chunk-13-1.png)
+![](twitter_net_files/figure-html/unnamed-chunk-15-1.png)
 
 Same goes for eigen values:  
 **For eigenvalues, we will not show a graph, due to negative values.**
