@@ -11,10 +11,12 @@ In this assignment we are gathering tweets by Barack Obama. Then we create a
 shows us which terms appear in each of the documents (a document is a tweet in
 our case).  
 After that we are constructing a term-term matrix, that shows to which terms
-each term is connected. This is actually a adjacency matrix representation of a
-graph that shows the connection between the terms.  
+each term is connected. This is actually an adjacency matrix representation of a
+graph that shows the connections between the terms.  
 There are many terms, so we only choose the most frequent terms, and show them
-in a graph with clustering.
+in a graph with clustering.  
+In addition, we show some metrics for the vertices - betweenness, closeness
+and eigen values.
 
 
 ## Check the results
