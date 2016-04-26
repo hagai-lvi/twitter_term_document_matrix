@@ -1,6 +1,6 @@
 ---
 title: "Twitter term-document-matrix"
-author: "Hagai Levi"
+author: "Lidan Hifi and Hagai Levi"
 date: "9 April 2016"
 output: 
   html_document: 

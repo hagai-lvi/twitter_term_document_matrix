@@ -1,5 +1,5 @@
 # Twitter term-document-matrix
-Hagai Levi  
+Lidan Hifi and Hagai Levi  
 9 April 2016  
 
 
