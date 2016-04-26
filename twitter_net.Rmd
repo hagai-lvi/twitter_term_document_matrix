@@ -5,6 +5,7 @@ date: "9 April 2016"
 output: 
   html_document: 
     keep_md: yes
+    toc: true
 ---
 
 ```{r global_options, setup, include=FALSE}
@@ -14,8 +15,8 @@ knitr::opts_chunk$set(echo = TRUE,
 
 A preface to this work can be found in the [README](README.md).  
 
-We have decided to first show clustering and only then to show the cenrality merics
-so that we can include the clusters in the graph when plotting the cenrality merics,
+We have decided to first show clustering and only then to show the centrality metrics
+so that we can include the clusters in the graph when plotting the centrality metrics,
 even though it is not the order of the tasks in the assignment.  
 
 We have based on http://www.rdatamining.com/examples/text-mining for retrieving the tweets.
@@ -106,7 +107,7 @@ myDtm <- TermDocumentMatrix(myCorpus, control = list(minWordLength = 1))
 inspect(myDtm[20:30,20:30])
 ```
 
-Display words associated with obama and american
+Display words associated with Obama and american
 ```{r}
 # which words are associated with "obama"?
 findAssocs(myDtm, 'obama', 0.30)

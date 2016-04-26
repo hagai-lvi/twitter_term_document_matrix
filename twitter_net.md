@@ -6,8 +6,8 @@ Hagai Levi
 
 A preface to this work can be found in the [README](README.md).  
 
-We have decided to first show clustering and only then to show the cenrality merics
-so that we can include the clusters in the graph when plotting the cenrality merics,
+We have decided to first show clustering and only then to show the centrality metrics
+so that we can include the clusters in the graph when plotting the centrality metrics,
 even though it is not the order of the tasks in the assignment.  
 
 We have based on http://www.rdatamining.com/examples/text-mining for retrieving the tweets.
@@ -129,7 +129,7 @@ Terms         20 21 22 23 24 25 26 27 28 29 30
   anybodi      0  0  0  0  0  0  0  0  0  0  0
 ```
 
-Display words associated with obama and american
+Display words associated with Obama and american
 
 ```r
 # which words are associated with "obama"?
