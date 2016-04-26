@@ -104,7 +104,7 @@ termDocMatrix[termDocMatrix>=1] <- 1
 termMatrix <- termDocMatrix %*% t(termDocMatrix)
 
 # inspect terms numbered 5 to 10
-termMatrix[5:10,5:10]
+termMatrix[15:20,15:20]
 ```
 
 The corpus is large, and we can't see clearly a large graph so we are using only a few
@@ -134,4 +134,28 @@ plot(g, layout=lay)
 community <- walktrap.community(g)
 plot(g, layout=lay, vertex.size=5, vertex.color=community$membership, asp=FALSE)
 
+```
+
+We want to show the betweenness of each of each term: 
+```{r}
+t(betweenness(g))
+```
+
+And show it on the graph, together with the clusters:
+```{r}
+plot(g, layout=lay, vertex.color=community$membership, vertex.size=betweenness(g), asp=FALSE)
+```
+
+Same goes for closeness:
+```{r}
+t(closeness(g))
+plot(g, layout=lay, vertex.color=community$membership, vertex.size=closeness(g), asp=FALSE)
+```
+
+And as closeness generates small values, we will increases the vertexes size:
+```{r}
+g.closeness <- closeness(g)
+g.closeness.normalized <- 10 * (g.closeness / min(g.closeness))
+t(g.closeness.normalized)
+plot(g, layout=lay, vertex.color=community$membership, vertex.size=g.closeness.normalized, asp=FALSE)
 ```
